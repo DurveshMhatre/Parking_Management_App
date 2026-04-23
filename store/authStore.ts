@@ -6,7 +6,7 @@ interface UserProfile {
   id: string;
   full_name: string | null;
   phone: string | null;
-  role: 'customer' | 'owner';
+  role: 'customer' | 'owner' | 'partner';
   created_at: string;
 }
 
@@ -24,7 +24,7 @@ interface AuthState {
   signInAsGuest: () => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   fetchProfile: (userId: string) => Promise<void>;
-  setRole: (role: 'customer' | 'owner') => void;
+  setRole: (role: 'customer' | 'owner' | 'partner') => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({

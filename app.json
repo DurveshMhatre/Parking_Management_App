@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "durveshparking",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "android": {
       "package": "com.durvesh.parking",
       "adaptiveIcon": {
@@ -17,7 +17,9 @@
       "edgeToEdgeEnabled": true,
       "permissions": [
         "CAMERA",
-        "VIBRATE"
+        "VIBRATE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -47,6 +49,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "38ff09bf-368b-4e6d-9df6-c4a506d51a96"
+      }
     }
   }
 }

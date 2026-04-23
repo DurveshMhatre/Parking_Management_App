@@ -139,6 +139,20 @@ export default function AdminDashboard() {
             <Text style={styles.actionIcon}>🏠</Text>
             <Text style={styles.actionText}>Customer{'\n'}View</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionCard, { borderColor: Colors.accent + '60' }]}
+            onPress={() => router.push('/(admin)/manage-partners')}
+          >
+            <Text style={styles.actionIcon}>🤝</Text>
+            <Text style={styles.actionText}>Manage{'\n'}Partners</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionCard, { borderColor: Colors.error + '60' }]}
+            onPress={() => {/* Navigate to penalties list — future enhancement */}}
+          >
+            <Text style={styles.actionIcon}>⚠️</Text>
+            <Text style={styles.actionText}>Penalty{'\n'}History</Text>
+          </TouchableOpacity>
         </View>
       </View>
 

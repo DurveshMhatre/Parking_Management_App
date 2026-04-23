@@ -23,8 +23,29 @@ export interface ParkingSession {
   amount_paid: number;
   payment_id: string | null;
   ticket_code: string;
-  status: 'active' | 'completed' | 'cancelled';
+  status: 'active' | 'completed' | 'cancelled' | 'overstay';
   created_at: string;
+  // Patch V3 columns
+  customer_phone?: string | null;
+  referral_code?: string | null;
+  partner_id?: string | null;
+  commission_id?: string | null;
+  duration_key?: string | null;
+  custom_hours?: number | null;
+  expiry_time?: string | null;
+  razorpay_mandate_id?: string | null;
+  mandate_status?: string | null;
+  overstay_start?: string | null;
+  overstay_minutes?: number;
+  overstay_hours?: number;
+  penalty_amount?: number;
+  penalty_deducted?: boolean;
+  penalty_payment_id?: string | null;
+  penalty_deducted_at?: string | null;
+  push_warning_count?: number;
+  whatsapp_warning_sent?: boolean;
+  whatsapp_receipt_sent?: boolean;
+  expo_push_token?: string | null;
 }
 
 interface ParkingConfig {
@@ -68,6 +89,11 @@ interface ParkingState {
     amount: number;
     paymentId: string;
     userId?: string;
+    durationKey?: string;
+    customHours?: number;
+    referralCode?: string;
+    partnerId?: string;
+    customerPhone?: string;
   }) => Promise<ParkingSession | null>;
   checkoutSession: (sessionId: string) => Promise<ParkingSession | null>;
   checkoutByTicketCode: (ticketCode: string) => Promise<ParkingSession | null>;
@@ -209,9 +235,10 @@ export const useParkingStore = create<ParkingState>((set, get) => ({
     }
   },
 
-  createSession: async ({ vehicleNo, vehicleTypeId, durationMins, amount, paymentId, userId }) => {
+  createSession: async ({ vehicleNo, vehicleTypeId, durationMins, amount, paymentId, userId, durationKey, customHours, referralCode, partnerId, customerPhone }) => {
     try {
       const ticketCode = generateTicketCode();
+      const expiryTime = new Date(Date.now() + durationMins * 60000).toISOString();
       
       const { data, error } = await supabase
         .from('parking_sessions')
@@ -224,6 +251,12 @@ export const useParkingStore = create<ParkingState>((set, get) => ({
           ticket_code: ticketCode,
           user_id: userId || null,
           status: 'active',
+          duration_key: durationKey || null,
+          custom_hours: customHours || null,
+          referral_code: referralCode || null,
+          partner_id: partnerId || null,
+          customer_phone: customerPhone || null,
+          expiry_time: expiryTime,
         })
         .select('*, vehicle_type:vehicle_types(*)')
         .single();

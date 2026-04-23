@@ -9,61 +9,73 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useParkingStore } from '../store/parkingStore';
-import { Colors, Spacing, BorderRadius, FontSize, FontWeight, Shadows } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { Spacing, BorderRadius, FontSize, FontWeight, Shadows } from '../constants/theme';
 import { formatDuration, formatDateTime } from '../lib/utils';
 
 export default function CheckoutConfirmScreen() {
+  const { colors, isDark } = useTheme();
   const { allSessions } = useParkingStore();
   const lastCompleted = allSessions.find((s) => s.status === 'completed');
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bgPrimary }]} contentContainerStyle={styles.content}>
       {/* Success animation */}
       <View style={styles.successHeader}>
-        <View style={styles.successIcon}>
+        <View style={[styles.successIcon, { backgroundColor: colors.successLight }]}>
           <Text style={styles.successEmoji}>🎉</Text>
         </View>
-        <Text style={styles.successTitle}>Checkout Complete!</Text>
-        <Text style={styles.successDesc}>Thank you for parking with us</Text>
+        <Text style={[styles.successTitle, { color: colors.success }]}>Checkout Complete!</Text>
+        <Text style={[styles.successDesc, { color: colors.textSecondary }]}>Thank you for parking with us</Text>
       </View>
 
       {/* Receipt Card */}
       {lastCompleted && (
-        <View style={styles.receiptCard}>
-          <Text style={styles.receiptTitle}>🧾 Receipt</Text>
+        <View style={[styles.receiptCard, {
+          backgroundColor: colors.bgSurface,
+          borderColor: colors.border,
+          ...(isDark ? Shadows.md : {
+            shadowColor: '#000000',
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 2 },
+            elevation: 3,
+          }),
+        }]}>
+          <Text style={[styles.receiptTitle, { color: colors.textPrimary }]}>🧾 Receipt</Text>
 
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptLabel}>Vehicle</Text>
-            <Text style={styles.receiptValue}>
+            <Text style={[styles.receiptLabel, { color: colors.textSecondary }]}>Vehicle</Text>
+            <Text style={[styles.receiptValue, { color: colors.textPrimary }]}>
               {(lastCompleted.vehicle_type as any)?.icon || '🚗'} {lastCompleted.vehicle_no}
             </Text>
           </View>
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptLabel}>Entry</Text>
-            <Text style={styles.receiptValue}>{formatDateTime(lastCompleted.entry_time)}</Text>
+            <Text style={[styles.receiptLabel, { color: colors.textSecondary }]}>Entry</Text>
+            <Text style={[styles.receiptValue, { color: colors.textPrimary }]}>{formatDateTime(lastCompleted.entry_time)}</Text>
           </View>
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptLabel}>Exit</Text>
-            <Text style={styles.receiptValue}>
+            <Text style={[styles.receiptLabel, { color: colors.textSecondary }]}>Exit</Text>
+            <Text style={[styles.receiptValue, { color: colors.textPrimary }]}>
               {lastCompleted.exit_time ? formatDateTime(lastCompleted.exit_time) : 'N/A'}
             </Text>
           </View>
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptLabel}>Duration</Text>
-            <Text style={styles.receiptValue}>
+            <Text style={[styles.receiptLabel, { color: colors.textSecondary }]}>Duration</Text>
+            <Text style={[styles.receiptValue, { color: colors.textPrimary }]}>
               {lastCompleted.duration_mins ? formatDuration(lastCompleted.duration_mins) : 'N/A'}
             </Text>
           </View>
           <View style={styles.receiptRow}>
-            <Text style={styles.receiptLabel}>Ticket</Text>
-            <Text style={styles.receiptValue}>{lastCompleted.ticket_code}</Text>
+            <Text style={[styles.receiptLabel, { color: colors.textSecondary }]}>Ticket</Text>
+            <Text style={[styles.receiptValue, { color: colors.textPrimary }]}>{lastCompleted.ticket_code}</Text>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Amount Paid</Text>
-            <Text style={styles.totalValue}>₹{lastCompleted.amount_paid}</Text>
+            <Text style={[styles.totalLabel, { color: colors.textPrimary }]}>Amount Paid</Text>
+            <Text style={[styles.totalValue, { color: colors.success }]}>₹{lastCompleted.amount_paid}</Text>
           </View>
         </View>
       )}
@@ -71,7 +83,7 @@ export default function CheckoutConfirmScreen() {
       {/* Park Again */}
       <TouchableOpacity style={styles.parkAgainButton} onPress={() => router.replace('/(tabs)')} activeOpacity={0.85}>
         <LinearGradient
-          colors={Colors.gradientPrimary as any}
+          colors={colors.gradientPrimary as any}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.parkAgainGradient}
@@ -81,16 +93,19 @@ export default function CheckoutConfirmScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.reBookButton}
+        style={[styles.reBookButton, {
+          backgroundColor: colors.bgSurface,
+          borderColor: colors.accent + '30',
+        }]}
         onPress={() => router.push('/entry')}
       >
-        <Text style={styles.reBookText}>🅿️ Park Another Vehicle</Text>
+        <Text style={[styles.reBookText, { color: colors.accent }]}>🅿️ Park Another Vehicle</Text>
       </TouchableOpacity>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>🅿️ Durvesh Parking</Text>
-        <Text style={styles.footerSubtext}>We hope to see you again!</Text>
+        <Text style={[styles.footerText, { color: colors.textMuted }]}>🅿️ Durvesh Parking</Text>
+        <Text style={[styles.footerSubtext, { color: colors.textMuted }]}>We hope to see you again!</Text>
       </View>
     </ScrollView>
   );
@@ -99,7 +114,6 @@ export default function CheckoutConfirmScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     padding: Spacing.lg,
@@ -113,7 +127,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.successLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
@@ -124,26 +137,20 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: FontSize.xxxl,
     fontWeight: FontWeight.extrabold,
-    color: Colors.success,
   },
   successDesc: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
     marginTop: Spacing.xs,
   },
   receiptCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     marginBottom: Spacing.xl,
     borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.md,
   },
   receiptTitle: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
     marginBottom: Spacing.lg,
   },
   receiptRow: {
@@ -153,16 +160,13 @@ const styles = StyleSheet.create({
   },
   receiptLabel: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
   },
   receiptValue: {
     fontSize: FontSize.md,
     fontWeight: FontWeight.semibold,
-    color: Colors.textPrimary,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.border,
     marginVertical: Spacing.md,
   },
   totalRow: {
@@ -173,12 +177,10 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
   },
   totalValue: {
     fontSize: FontSize.xxl,
     fontWeight: FontWeight.extrabold,
-    color: Colors.success,
   },
   parkAgainButton: {
     borderRadius: BorderRadius.xl,
@@ -197,18 +199,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   reBookButton: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.primary + '30',
     marginBottom: Spacing.xl,
   },
   reBookText: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.primary,
   },
   footer: {
     alignItems: 'center',
@@ -217,11 +216,9 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textMuted,
   },
   footerSubtext: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
     marginTop: 4,
   },
 });

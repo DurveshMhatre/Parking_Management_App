@@ -11,11 +11,13 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useParkingStore, ParkingSession } from '../../store/parkingStore';
 import { useAuthStore } from '../../store/authStore';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius, Shadows } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Spacing, FontSize, FontWeight, BorderRadius, Shadows } from '../../constants/theme';
 import { formatDateTime, formatDuration } from '../../lib/utils';
 import { supabase } from '../../lib/supabase';
 
 export default function HistoryScreen() {
+  const { colors, isDark } = useTheme();
   const { user } = useAuthStore();
   const [sessions, setSessions] = React.useState<ParkingSession[]>([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -57,72 +59,88 @@ export default function HistoryScreen() {
     const isActive = item.status === 'active';
 
     return (
-      <View style={styles.sessionCard}>
+      <View style={[styles.sessionCard, {
+        backgroundColor: colors.bgSurface,
+        borderColor: colors.border,
+        ...(isDark ? Shadows.sm : {
+          shadowColor: '#000000',
+          shadowOpacity: 0.04,
+          shadowRadius: 4,
+          shadowOffset: { width: 0, height: 1 },
+          elevation: 2,
+        }),
+      }]}>
         <View style={styles.sessionHeader}>
           <View style={styles.sessionVehicle}>
             <Text style={styles.sessionIcon}>{vt?.icon || '🚗'}</Text>
             <View>
-              <Text style={styles.sessionVehicleNo}>{item.vehicle_no}</Text>
-              <Text style={styles.sessionType}>{vt?.name || 'Vehicle'}</Text>
+              <Text style={[styles.sessionVehicleNo, { color: colors.textPrimary }]}>{item.vehicle_no}</Text>
+              <Text style={[styles.sessionType, { color: colors.textSecondary }]}>{vt?.name || 'Vehicle'}</Text>
             </View>
           </View>
           <View style={[
             styles.statusTag,
-            { backgroundColor: isActive ? Colors.successLight : Colors.primary + '20' },
+            { backgroundColor: isActive ? colors.successLight : colors.accent + '20' },
           ]}>
             <Text style={[
               styles.statusTagText,
-              { color: isActive ? Colors.success : Colors.primary },
+              { color: isActive ? colors.success : colors.accent },
             ]}>
               {isActive ? 'Active' : 'Completed'}
             </Text>
           </View>
         </View>
 
-        <View style={styles.sessionDetails}>
+        <View style={[styles.sessionDetails, { borderTopColor: colors.border }]}>
           <View style={styles.sessionDetail}>
-            <Text style={styles.detailLabel}>Entry</Text>
-            <Text style={styles.detailValue}>{formatDateTime(item.entry_time)}</Text>
+            <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Entry</Text>
+            <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{formatDateTime(item.entry_time)}</Text>
           </View>
           {item.exit_time && (
             <View style={styles.sessionDetail}>
-              <Text style={styles.detailLabel}>Exit</Text>
-              <Text style={styles.detailValue}>{formatDateTime(item.exit_time)}</Text>
+              <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Exit</Text>
+              <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{formatDateTime(item.exit_time)}</Text>
             </View>
           )}
           {item.duration_mins && (
             <View style={styles.sessionDetail}>
-              <Text style={styles.detailLabel}>Duration</Text>
-              <Text style={styles.detailValue}>{formatDuration(item.duration_mins)}</Text>
+              <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Duration</Text>
+              <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{formatDuration(item.duration_mins)}</Text>
             </View>
           )}
           <View style={styles.sessionDetail}>
-            <Text style={styles.detailLabel}>Amount</Text>
-            <Text style={[styles.detailValue, { color: Colors.success }]}>₹{item.amount_paid}</Text>
+            <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Amount</Text>
+            <Text style={[styles.detailValue, { color: colors.success }]}>₹{item.amount_paid}</Text>
           </View>
         </View>
 
-        <Text style={styles.ticketCode}>Ticket: {item.ticket_code}</Text>
+        <Text style={[styles.ticketCode, { color: colors.textMuted }]}>Ticket: {item.ticket_code}</Text>
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       <View style={styles.headerSection}>
-        <Text style={styles.title}>Parking History</Text>
-        <Text style={styles.subtitle}>{sessions.length} sessions</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>Parking History</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{sessions.length} sessions</Text>
       </View>
 
       {/* Stats */}
       <View style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{sessions.length}</Text>
-          <Text style={styles.statLabel}>Total Visits</Text>
+        <View style={[styles.statCard, {
+          backgroundColor: colors.bgSurface,
+          borderColor: colors.border,
+        }]}>
+          <Text style={[styles.statValue, { color: colors.textPrimary }]}>{sessions.length}</Text>
+          <Text style={[styles.statLabel, { color: colors.textMuted }]}>Total Visits</Text>
         </View>
-        <View style={styles.statCard}>
-          <Text style={[styles.statValue, { color: Colors.success }]}>₹{totalSpent}</Text>
-          <Text style={styles.statLabel}>Total Spent</Text>
+        <View style={[styles.statCard, {
+          backgroundColor: colors.bgSurface,
+          borderColor: colors.border,
+        }]}>
+          <Text style={[styles.statValue, { color: colors.success }]}>₹{totalSpent}</Text>
+          <Text style={[styles.statLabel, { color: colors.textMuted }]}>Total Spent</Text>
         </View>
       </View>
 
@@ -132,13 +150,13 @@ export default function HistoryScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyIcon}>📋</Text>
-            <Text style={styles.emptyTitle}>No History Yet</Text>
-            <Text style={styles.emptyDesc}>Your parking history will appear here</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No History Yet</Text>
+            <Text style={[styles.emptyDesc, { color: colors.textMuted }]}>Your parking history will appear here</Text>
           </View>
         }
       />
@@ -149,7 +167,6 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   headerSection: {
     padding: Spacing.lg,
@@ -159,11 +176,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSize.xxxl,
     fontWeight: FontWeight.extrabold,
-    color: Colors.textPrimary,
   },
   subtitle: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
     marginTop: Spacing.xs,
   },
   statsRow: {
@@ -173,21 +188,17 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   statValue: {
     fontSize: FontSize.xxl,
     fontWeight: FontWeight.extrabold,
-    color: Colors.textPrimary,
   },
   statLabel: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
     marginTop: 4,
     textTransform: 'uppercase',
   },
@@ -197,12 +208,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   sessionCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.sm,
   },
   sessionHeader: {
     flexDirection: 'row',
@@ -221,11 +229,9 @@ const styles = StyleSheet.create({
   sessionVehicleNo: {
     fontSize: FontSize.md,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
   },
   sessionType: {
     fontSize: FontSize.xs,
-    color: Colors.textSecondary,
   },
   statusTag: {
     paddingHorizontal: Spacing.sm,
@@ -242,23 +248,19 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   sessionDetail: {},
   detailLabel: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
     textTransform: 'uppercase',
   },
   detailValue: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.semibold,
-    color: Colors.textPrimary,
     marginTop: 2,
   },
   ticketCode: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
     marginTop: Spacing.sm,
     fontFamily: Platform.OS === 'android' ? 'monospace' : 'Courier',
   },
@@ -274,11 +276,9 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FontSize.xl,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
   },
   emptyDesc: {
     fontSize: FontSize.md,
-    color: Colors.textMuted,
     marginTop: Spacing.sm,
   },
 });

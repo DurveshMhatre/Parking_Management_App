@@ -1,50 +1,53 @@
-// Durvesh Parking — Design System
+// ParkSpace — Premium Dark Design System
+// Theme: Dark luxury with electric accents — "Smart City Parking"
+
 export const Colors = {
-  // Primary palette
+  // Backgrounds (Dark theme)
+  background: '#0A0A14',
+  surface: '#1C1C2E',
+  card: '#12121F',
+  surfaceElevated: '#252540',
+
+  // Primary
   primary: '#6C63FF',
   primaryDark: '#5A52D5',
-  primaryLight: '#8B85FF',
+  primaryLight: '#8B83FF',
   primaryGlow: 'rgba(108, 99, 255, 0.3)',
 
-  // Accent
-  accent: '#00D9FF',
-  accentDark: '#00B8D9',
+  // Secondary / Accent
+  accent: '#00D4AA',
+  accentDark: '#00B88F',
+  accentLight: 'rgba(0, 212, 170, 0.15)',
 
-  // Success / Warning / Error
-  success: '#00C853',
-  successLight: 'rgba(0, 200, 83, 0.15)',
-  warning: '#FFB300',
-  warningLight: 'rgba(255, 179, 0, 0.15)',
-  error: '#FF5252',
-  errorLight: 'rgba(255, 82, 82, 0.15)',
-
-  // Backgrounds (Dark theme)
-  background: '#0F0F1A',
-  surface: '#1A1A2E',
-  surfaceLight: '#252540',
-  surfaceElevated: '#2A2A45',
-  card: '#1E1E35',
+  // Status
+  success: '#00D4AA',
+  successLight: 'rgba(0, 212, 170, 0.15)',
+  warning: '#FFB547',
+  warningLight: 'rgba(255, 181, 71, 0.15)',
+  error: '#FF4757',
+  errorLight: 'rgba(255, 71, 87, 0.15)',
 
   // Text
   textPrimary: '#FFFFFF',
-  textSecondary: '#A0A0B8',
-  textMuted: '#6B6B80',
-  textInverse: '#0F0F1A',
+  textSecondary: '#8892A4',
+  textMuted: '#4A5568',
+  textInverse: '#0A0A14',
 
   // Borders
-  border: '#2E2E48',
-  borderLight: '#3A3A55',
+  border: '#1E2A3A',
+  borderLight: '#2A3A4E',
 
-  // Vehicle type colors
-  car: '#FF6B6B',
-  bike: '#4ECDC4',
-  rickshaw: '#FFE66D',
+  // Vehicle type colors (from pricing.ts VEHICLE_META)
+  car: '#2563EB',
+  bike: '#16A34A',
+  rickshaw: '#D97706',
 
   // Gradient presets
-  gradientPrimary: ['#6C63FF', '#8B85FF'],
-  gradientAccent: ['#00D9FF', '#00B8D9'],
-  gradientDark: ['#1A1A2E', '#0F0F1A'],
-  gradientCard: ['#1E1E35', '#252540'],
+  gradientPrimary: ['#6C63FF', '#8B83FF'],
+  gradientAccent: ['#6C63FF', '#00D4AA'],
+  gradientDark: ['#12121F', '#0A0A14'],
+  gradientCard: ['#12121F', '#1C1C2E'],
+  gradientCTA: ['#6C63FF', '#8B83FF'],
 };
 
 export const Spacing = {
@@ -61,7 +64,8 @@ export const BorderRadius = {
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 24,
+  xl: 20,
+  xxl: 24,
   full: 999,
 };
 
@@ -72,7 +76,7 @@ export const FontSize = {
   lg: 17,
   xl: 20,
   xxl: 26,
-  xxxl: 34,
+  xxxl: 32,
   hero: 42,
 };
 
@@ -88,22 +92,22 @@ export const Shadows = {
   sm: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
   },
   md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
   lg: {
     shadowColor: '#6C63FF',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
     elevation: 8,
   },
   glow: {
@@ -113,16 +117,18 @@ export const Shadows = {
     shadowRadius: 20,
     elevation: 10,
   },
-};
-
-export const VehicleConfig = {
-  car: { name: 'Car', icon: '🚗', color: Colors.car, slots: 2, rate: 100 },
-  bike: { name: 'Bike', icon: '🏍️', color: Colors.bike, slots: 5, rate: 50 },
-  rickshaw: { name: 'Rickshaw', icon: '🛺', color: Colors.rickshaw, slots: 2, rate: 30 },
+  accentGlow: {
+    shadowColor: '#00D4AA',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
 };
 
 export const ParkingConfig = {
   lotName: 'Durvesh Parking',
+  locationLabel: 'Durvesh Open Parking, Sector 12',
   currency: '₹',
   openTime: '00:00',
   closeTime: '24:00',

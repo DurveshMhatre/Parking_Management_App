@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: Colors.surfaceLight,
+    backgroundColor: Colors.surfaceElevated,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     fontSize: FontSize.lg,

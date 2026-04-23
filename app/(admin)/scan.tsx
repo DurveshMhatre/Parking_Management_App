@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   codeInput: {
-    backgroundColor: Colors.surfaceLight,
+    backgroundColor: Colors.surfaceElevated,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     fontSize: FontSize.xxl,

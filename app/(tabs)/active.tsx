@@ -4,13 +4,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
 import { useParkingStore } from '../../store/parkingStore';
 import ActiveSessionCard from '../../components/ActiveSessionCard';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
+import { Spacing, FontSize, FontWeight, BorderRadius } from '../../constants/theme';
 import { router } from 'expo-router';
 import { notifyCheckoutComplete } from '../../lib/notifications';
 import { formatDuration } from '../../lib/utils';
 import { Alert } from 'react-native';
 
 export default function ActiveScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { currentSession, activeSessions, fetchUserActiveSessions, fetchActiveSessions, checkoutSession } = useParkingStore();
   const [refreshing, setRefreshing] = React.useState(false);
@@ -55,14 +57,14 @@ export default function ActiveScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.bgPrimary }]}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
       }
     >
-      <Text style={styles.title}>Active Parking</Text>
-      <Text style={styles.subtitle}>Your current parking sessions</Text>
+      <Text style={[styles.title, { color: colors.textPrimary }]}>Active Parking</Text>
+      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Your current parking sessions</Text>
 
       {currentSession ? (
         <View style={styles.section}>
@@ -74,8 +76,8 @@ export default function ActiveScreen() {
       ) : (
         <View style={styles.emptyState}>
           <Text style={styles.emptyIcon}>🅿️</Text>
-          <Text style={styles.emptyTitle}>No Active Parking</Text>
-          <Text style={styles.emptyDesc}>
+          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No Active Parking</Text>
+          <Text style={[styles.emptyDesc, { color: colors.textMuted }]}>
             You don't have any active parking sessions.{'\n'}Tap "Park My Vehicle" on the home screen to get started.
           </Text>
         </View>
@@ -87,7 +89,6 @@ export default function ActiveScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     padding: Spacing.lg,
@@ -97,11 +98,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSize.xxxl,
     fontWeight: FontWeight.extrabold,
-    color: Colors.textPrimary,
   },
   subtitle: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
     marginTop: Spacing.xs,
     marginBottom: Spacing.xl,
   },
@@ -122,12 +121,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FontSize.xl,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   emptyDesc: {
     fontSize: FontSize.md,
-    color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 22,
   },

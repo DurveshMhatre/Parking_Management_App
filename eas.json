@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -8,6 +9,9 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_test_XXXXXXXXXXXXXXXX"
       }
     },
     "preview": {
@@ -19,6 +23,9 @@
     "production": {
       "android": {
         "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_live_XXXXXXXXXXXXXXXX"
       }
     }
   },

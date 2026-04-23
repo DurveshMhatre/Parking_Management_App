@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import { Colors, Spacing, BorderRadius, FontSize, FontWeight, Shadows } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { Spacing, BorderRadius, FontSize, FontWeight, Shadows } from '../constants/theme';
 import { getElapsedMinutes, formatDuration, formatTime } from '../lib/utils';
 import type { ParkingSession } from '../store/parkingStore';
 
@@ -18,6 +19,7 @@ export default function ActiveSessionCard({
   onPress,
   compact = false,
 }: ActiveSessionCardProps) {
+  const { colors, isDark } = useTheme();
   const [elapsed, setElapsed] = useState(getElapsedMinutes(session.entry_time));
 
   useEffect(() => {
@@ -32,43 +34,53 @@ export default function ActiveSessionCard({
   const typeName = vehicleType?.name || 'Vehicle';
 
   const Content = () => (
-    <View style={[styles.card, compact && styles.cardCompact]}>
+    <View style={[styles.card, compact && styles.cardCompact, {
+      backgroundColor: colors.bgSurface,
+      borderColor: colors.accent + '40',
+      ...(isDark ? Shadows.md : {
+        shadowColor: '#000000',
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
+      }),
+    }]}>
       {/* Glowing indicator */}
-      <View style={styles.glowDot} />
+      <View style={[styles.glowDot, { backgroundColor: colors.success }]} />
 
       <View style={styles.topRow}>
         <View style={styles.vehicleInfo}>
           <Text style={styles.icon}>{icon}</Text>
           <View>
-            <Text style={styles.vehicleNo}>{session.vehicle_no}</Text>
-            <Text style={styles.vehicleType}>{typeName}</Text>
+            <Text style={[styles.vehicleNo, { color: colors.textPrimary }]}>{session.vehicle_no}</Text>
+            <Text style={[styles.vehicleType, { color: colors.textSecondary }]}>{typeName}</Text>
           </View>
         </View>
         <View style={styles.timerContainer}>
-          <Text style={styles.timerLabel}>Elapsed</Text>
-          <Text style={styles.timerValue}>{formatDuration(elapsed)}</Text>
+          <Text style={[styles.timerLabel, { color: colors.textMuted }]}>Elapsed</Text>
+          <Text style={[styles.timerValue, { color: colors.success }]}>{formatDuration(elapsed)}</Text>
         </View>
       </View>
 
       {!compact && (
         <>
-          <View style={styles.detailsRow}>
+          <View style={[styles.detailsRow, { borderTopColor: colors.border }]}>
             <View style={styles.detail}>
-              <Text style={styles.detailLabel}>Entry</Text>
-              <Text style={styles.detailValue}>{formatTime(session.entry_time)}</Text>
+              <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Entry</Text>
+              <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{formatTime(session.entry_time)}</Text>
             </View>
             <View style={styles.detail}>
-              <Text style={styles.detailLabel}>Paid</Text>
-              <Text style={styles.detailValue}>₹{session.amount_paid}</Text>
+              <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Paid</Text>
+              <Text style={[styles.detailValue, { color: colors.textPrimary }]}>₹{session.amount_paid}</Text>
             </View>
             <View style={styles.detail}>
-              <Text style={styles.detailLabel}>Ticket</Text>
-              <Text style={styles.detailValue}>{session.ticket_code}</Text>
+              <Text style={[styles.detailLabel, { color: colors.textMuted }]}>Ticket</Text>
+              <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{session.ticket_code}</Text>
             </View>
           </View>
 
           {onCheckout && (
-            <TouchableOpacity style={styles.checkoutBtn} onPress={onCheckout}>
+            <TouchableOpacity style={[styles.checkoutBtn, { backgroundColor: colors.accent }]} onPress={onCheckout}>
               <Text style={styles.checkoutBtnText}>Request Checkout</Text>
             </TouchableOpacity>
           )}
@@ -90,14 +102,11 @@ export default function ActiveSessionCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.primary + '40',
     position: 'relative',
     overflow: 'hidden',
-    ...Shadows.md,
   },
   cardCompact: {
     padding: Spacing.md,
@@ -109,8 +118,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.success,
-    ...Shadows.glow,
   },
   topRow: {
     flexDirection: 'row',
@@ -128,24 +135,20 @@ const styles = StyleSheet.create({
   vehicleNo: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
   },
   vehicleType: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
   },
   timerContainer: {
     alignItems: 'flex-end',
   },
   timerLabel: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
     textTransform: 'uppercase',
   },
   timerValue: {
     fontSize: FontSize.xl,
     fontWeight: FontWeight.bold,
-    color: Colors.accent,
   },
   detailsRow: {
     flexDirection: 'row',
@@ -153,31 +156,27 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     paddingTop: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   detail: {
     alignItems: 'center',
   },
   detailLabel: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
     marginBottom: 4,
     textTransform: 'uppercase',
   },
   detailValue: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.semibold,
-    color: Colors.textPrimary,
   },
   checkoutBtn: {
-    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.sm + 4,
     marginTop: Spacing.lg,
     alignItems: 'center',
   },
   checkoutBtnText: {
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     fontWeight: FontWeight.bold,
     fontSize: FontSize.md,
   },

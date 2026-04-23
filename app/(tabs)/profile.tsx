@@ -9,9 +9,17 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../store/authStore';
-import { Colors, Spacing, BorderRadius, FontSize, FontWeight, Shadows } from '../../constants/theme';
+import { useTheme, ThemeMode } from '../../context/ThemeContext';
+import { Spacing, BorderRadius, FontSize, FontWeight, Shadows } from '../../constants/theme';
+
+const THEME_OPTIONS: { label: string; value: ThemeMode; icon: string }[] = [
+  { label: 'Light',  value: 'light',  icon: '☀️' },
+  { label: 'Dark',   value: 'dark',   icon: '🌙' },
+  { label: 'System', value: 'system', icon: '📱' },
+];
 
 export default function ProfileScreen() {
+  const { colors, mode, setMode, isDark } = useTheme();
   const { user, profile, isGuest, signOut } = useAuthStore();
 
   const handleSignOut = () => {
@@ -33,28 +41,38 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Profile</Text>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bgPrimary }]} contentContainerStyle={styles.content}>
+      <Text style={[styles.title, { color: colors.textPrimary }]}>Profile</Text>
 
       {/* User Card */}
-      <View style={styles.userCard}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
+      <View style={[styles.userCard, {
+        backgroundColor: colors.bgSurface,
+        borderColor: colors.border,
+        ...(isDark ? Shadows.md : {
+          shadowColor: '#000000',
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 2 },
+          elevation: 3,
+        }),
+      }]}>
+        <View style={[styles.avatar, { backgroundColor: colors.accent + '30' }]}>
+          <Text style={[styles.avatarText, { color: colors.accent }]}>
             {isGuest ? '👤' : (profile?.full_name?.[0] || user?.email?.[0] || '?').toUpperCase()}
           </Text>
         </View>
         <View style={styles.userInfo}>
           {isGuest ? (
             <>
-              <Text style={styles.userName}>Guest User</Text>
-              <Text style={styles.userEmail}>No account linked</Text>
+              <Text style={[styles.userName, { color: colors.textPrimary }]}>Guest User</Text>
+              <Text style={[styles.userEmail, { color: colors.textSecondary }]}>No account linked</Text>
             </>
           ) : (
             <>
-              <Text style={styles.userName}>{profile?.full_name || 'User'}</Text>
-              <Text style={styles.userEmail}>{user?.email}</Text>
-              <View style={styles.roleBadge}>
-                <Text style={styles.roleText}>
+              <Text style={[styles.userName, { color: colors.textPrimary }]}>{profile?.full_name || 'User'}</Text>
+              <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
+              <View style={[styles.roleBadge, { backgroundColor: colors.accent + '20' }]}>
+                <Text style={[styles.roleText, { color: colors.accent }]}>
                   {profile?.role === 'owner' ? '👑 Owner' : '🚗 Customer'}
                 </Text>
               </View>
@@ -63,53 +81,89 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {/* APPEARANCE — Theme Selector (Change 4) */}
+      <View style={{ marginBottom: Spacing.lg }}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>APPEARANCE</Text>
+        {THEME_OPTIONS.map((option) => {
+          const isSelected = mode === option.value;
+          return (
+            <TouchableOpacity
+              key={option.value}
+              style={[
+                styles.themeOptionRow,
+                {
+                  backgroundColor: colors.bgCard,
+                  borderColor: isSelected ? colors.accent : colors.border,
+                  borderWidth: isSelected ? 1.5 : 1,
+                },
+              ]}
+              onPress={() => setMode(option.value)}
+            >
+              <Text style={styles.themeOptionIcon}>{option.icon}</Text>
+              <Text style={[styles.themeOptionLabel, { color: colors.textPrimary }]}>
+                {option.label}
+              </Text>
+              {isSelected && (
+                <View style={[styles.selectedDot, { backgroundColor: colors.accent }]} />
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
       {/* Menu Items */}
-      <View style={styles.menuSection}>
+      <View style={[styles.menuSection, {
+        backgroundColor: colors.bgSurface,
+        borderColor: colors.border,
+      }]}>
         {profile?.role === 'owner' && (
-          <TouchableOpacity style={styles.menuItem} onPress={handleSwitchToAdmin}>
+          <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={handleSwitchToAdmin}>
             <Text style={styles.menuIcon}>🔧</Text>
-            <Text style={styles.menuText}>Admin Dashboard</Text>
-            <Text style={styles.menuArrow}>→</Text>
+            <Text style={[styles.menuText, { color: colors.textPrimary }]}>Admin Dashboard</Text>
+            <Text style={[styles.menuArrow, { color: colors.textMuted }]}>→</Text>
           </TouchableOpacity>
         )}
         
-        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(tabs)/history')}>
+        <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={() => router.push('/(tabs)/history')}>
           <Text style={styles.menuIcon}>📋</Text>
-          <Text style={styles.menuText}>Parking History</Text>
-          <Text style={styles.menuArrow}>→</Text>
+          <Text style={[styles.menuText, { color: colors.textPrimary }]}>Parking History</Text>
+          <Text style={[styles.menuArrow, { color: colors.textMuted }]}>→</Text>
         </TouchableOpacity>
 
-        <View style={styles.menuItem}>
+        <View style={[styles.menuItem, { borderBottomColor: colors.border }]}>
           <Text style={styles.menuIcon}>ℹ️</Text>
-          <Text style={styles.menuText}>App Version</Text>
-          <Text style={styles.menuValue}>1.0.0</Text>
+          <Text style={[styles.menuText, { color: colors.textPrimary }]}>App Version</Text>
+          <Text style={[styles.menuValue, { color: colors.textMuted }]}>1.0.0</Text>
         </View>
       </View>
 
       {/* Guest upgrade CTA */}
       {isGuest && (
         <TouchableOpacity
-          style={styles.upgradeCard}
+          style={[styles.upgradeCard, {
+            backgroundColor: colors.accent + '15',
+            borderColor: colors.accent + '30',
+          }]}
           onPress={() => router.push('/(auth)/register')}
         >
-          <Text style={styles.upgradeTitle}>Create an Account</Text>
-          <Text style={styles.upgradeDesc}>
+          <Text style={[styles.upgradeTitle, { color: colors.accent }]}>Create an Account</Text>
+          <Text style={[styles.upgradeDesc, { color: colors.textSecondary }]}>
             Save your parking history and get personalized features
           </Text>
         </TouchableOpacity>
       )}
 
       {/* Sign Out */}
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutText}>
+      <TouchableOpacity style={[styles.signOutButton, { backgroundColor: colors.errorLight }]} onPress={handleSignOut}>
+        <Text style={[styles.signOutText, { color: colors.error }]}>
           {isGuest ? '← Exit Guest Mode' : '← Sign Out'}
         </Text>
       </TouchableOpacity>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>🅿️ Durvesh Parking</Text>
-        <Text style={styles.footerSubtext}>Smart Parking Management</Text>
+        <Text style={[styles.footerText, { color: colors.textMuted }]}>🅿️ Durvesh Parking</Text>
+        <Text style={[styles.footerSubtext, { color: colors.textMuted }]}>Smart Parking Management</Text>
       </View>
     </ScrollView>
   );
@@ -118,7 +172,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     padding: Spacing.lg,
@@ -127,25 +180,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSize.xxxl,
     fontWeight: FontWeight.extrabold,
-    color: Colors.textPrimary,
     marginBottom: Spacing.xl,
   },
   userCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.md,
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.primary + '30',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -153,7 +201,6 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 24,
     fontWeight: FontWeight.bold,
-    color: Colors.primary,
   },
   userInfo: {
     flex: 1,
@@ -161,15 +208,12 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: FontSize.xl,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
   },
   userEmail: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
     marginTop: 2,
   },
   roleBadge: {
-    backgroundColor: Colors.primary + '20',
     paddingHorizontal: Spacing.sm,
     paddingVertical: 3,
     borderRadius: BorderRadius.full,
@@ -179,22 +223,44 @@ const styles = StyleSheet.create({
   roleText: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.bold,
-    color: Colors.primary,
+  },
+  sectionTitle: {
+    fontSize: 11,
+    fontFamily: 'DM_Sans_600SemiBold',
+    letterSpacing: 1.2,
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  themeOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 8,
+    gap: 12,
+  },
+  themeOptionIcon: { fontSize: 20 },
+  themeOptionLabel: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: 'DM_Sans_500Medium',
+  },
+  selectedDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   menuSection: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
     overflow: 'hidden',
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   menuIcon: {
     fontSize: 20,
@@ -203,37 +269,29 @@ const styles = StyleSheet.create({
   menuText: {
     flex: 1,
     fontSize: FontSize.md,
-    color: Colors.textPrimary,
     fontWeight: FontWeight.medium,
   },
   menuArrow: {
     fontSize: FontSize.md,
-    color: Colors.textMuted,
   },
   menuValue: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
   },
   upgradeCard: {
-    backgroundColor: Colors.primary + '15',
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.primary + '30',
   },
   upgradeTitle: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.primary,
     marginBottom: Spacing.xs,
   },
   upgradeDesc: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
   },
   signOutButton: {
-    backgroundColor: Colors.errorLight,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
@@ -242,7 +300,6 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: FontSize.md,
     fontWeight: FontWeight.bold,
-    color: Colors.error,
   },
   footer: {
     alignItems: 'center',
@@ -251,11 +308,9 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textMuted,
   },
   footerSubtext: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
     marginTop: 4,
   },
 });
